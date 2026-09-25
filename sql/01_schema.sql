@@ -1,36 +1,38 @@
+USE phonemanagement_db;
+
 CREATE TABLE Brands(
     brand_id INT PRIMARY KEY AUTO_INCREMENT,
     brand_name VARCHAR(100) NOT NULL,
     country VARCHAR(100) NOT NULL,
     logo_url VARCHAR(255) NOT NULL,
     description TEXT NOT NULL
-)
+);
 
 CREATE TABLE Categories(
     category_id INT PRIMARY KEY AUTO_INCREMENT,
     category_name VARCHAR(100) NOT NULL,
     description TEXT NOT NULL
-)
+);
 
 CREATE TABLE Roles(
     role_id INT PRIMARY KEY AUTO_INCREMENT,
     role_name VARCHAR(50) NOT NULL,
     description TEXT NOT NULL
-)
+);
 
 CREATE TABLE Permissions(
     permission_id INT PRIMARY KEY AUTO_INCREMENT,
     permission_name VARCHAR(50) NOT NULL,
     description TEXT NOT NULL
-)
+);
 
 CREATE TABLE RolePermissions(
     role_id INT,
     permission_id INT,
     primary key(role_id, permission_id),
-    FOREIGN KEY (role_id) REFERENCES Roles(role_id),
-    FOREIGN KEY (permission_id) REFERENCES Permissions(permission_id)
-)
+    FOREIGN KEY (role_id) REFERENCES Roles(role_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (permission_id) REFERENCES Permissions(permission_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
 
 CREATE TABLE Users(
     user_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -43,23 +45,20 @@ CREATE TABLE Users(
     is_active BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (role_id) REFERENCES Roles(role_id)
-)
+    FOREIGN KEY (role_id) REFERENCES Roles(role_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
 
 CREATE TABLE Customers(
     customer_id INT PRIMARY KEY AUTO_INCREMENT, 
     user_id INT,
-    name VARCHAR(100) NOT NULL,
-    phone VARCHAR(20) NOT NULL,
     address VARCHAR(255) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE,
     city VARCHAR(100) NOT NULL,
     membership_level VARCHAR(50) NOT NULL,
     total_spent DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     -- updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES Users(user_id)
-)
+    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
 
 CREATE TABLE Staff(
     staff_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -68,9 +67,8 @@ CREATE TABLE Staff(
     salary DECIMAL(10, 2) NOT NULL,
     hire_date DATE NOT NULL,
     -- department VARCHAR(100) NOT NULL,
-    phone VARCHAR(20) NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES Users(user_id)
-)
+    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
 
 CREATE TABLE Products(
     product_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -78,9 +76,9 @@ CREATE TABLE Products(
     brand_id INT,
     category_id INT,
     description TEXT NOT NULL,
-    FOREIGN KEY (brand_id) REFERENCES Brands(brand_id),
-    FOREIGN KEY (category_id) REFERENCES Categories(category_id)
-)
+    FOREIGN KEY (brand_id) REFERENCES Brands(brand_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (category_id) REFERENCES Categories(category_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
 
 CREATE TABLE ProductSpecs(
     spec_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -101,8 +99,8 @@ CREATE TABLE ProductSpecs(
     color VARCHAR(50) NOT NULL,
     warranty_period VARCHAR(50) NOT NULL,
     status VARCHAR(50) NOT NULL,
-    FOREIGN KEY (product_id) REFERENCES Products(product_id)
-)
+    FOREIGN KEY (product_id) REFERENCES Products(product_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
 
 CREATE TABLE Inventory(
     inventory_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -113,7 +111,7 @@ CREATE TABLE Inventory(
     transaction_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     notes TEXT,
     FOREIGN KEY (spec_id) REFERENCES ProductSpecs(spec_id)
-)
+);
 
 CREATE TABLE Orders(
     order_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -128,7 +126,7 @@ CREATE TABLE Orders(
     notes TEXT,
     FOREIGN KEY (customer_id) REFERENCES Customers(customer_id),
     FOREIGN KEY (staff_id) REFERENCES Staff(staff_id)
-)
+);
 
 CREATE TABLE OrderDetails(
     order_detail_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -138,6 +136,6 @@ CREATE TABLE OrderDetails(
     unit_price DECIMAL(10, 2) NOT NULL,
     discount_percent DECIMAL(5, 2) NOT NULL DEFAULT 0.00,
     subtotal DECIMAL(10, 2) NOT NULL,
-    FOREIGN KEY (order_id) REFERENCES Orders(order_id),
+    FOREIGN KEY (order_id) REFERENCES Orders(order_id) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (spec_id) REFERENCES ProductSpecs(spec_id)
-)
+);
